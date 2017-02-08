@@ -3,15 +3,8 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.example</groupId>
-	<artifactId>demo-complaints-stats</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<packaging>jar</packaging>
-
-	<name>demo-complaints-stats</name>
-	<description>Demo project for Spring Boot</description>
-
 	<properties>
+		<artifact.version>0.0.1-SNAPSHOT</artifact.version>
 		<axon.version>3.0</axon.version>
 		<java.version>1.8</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -25,12 +18,26 @@
 		<docker.skip>false</docker.skip>
 	</properties>
 
+	<groupId>com.example</groupId>
+	<artifactId>demo-complaints-stats</artifactId>
+	<version>${artifact.version}</version>
+	<packaging>jar</packaging>
+
+	<name>demo-complaints-stats</name>
+	<description>Demo project for Spring Boot</description>
+
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.5.1.RELEASE</version>
+		<version>${spring-boot.version}</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
+
+	<scm>
+		<connection>scm:git:https://github.com/bvpelt/demo-complaints-stats.git</connection>
+		<developerConnection>scm:git:https://github.com/bvpelt/demo-complaints-stats.git</developerConnection>
+		<tag>HEAD</tag>
+	</scm>
 
 	<dependencies>
 		<dependency>
@@ -41,7 +48,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
-
         <dependency>
             <groupId>org.axonframework</groupId>
             <artifactId>axon-spring-boot-starter</artifactId>
@@ -66,6 +72,22 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.5.3</version>
+				<dependencies>
+					<dependency>
+						<groupId>org.apache.maven.scm</groupId>
+						<artifactId>maven-scm-api</artifactId>
+						<version>1.9.5</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.maven.scm</groupId>
+						<artifactId>maven-scm-provider-gitexe</artifactId>
+						<version>1.9.5</version>
+					</dependency>
+				</dependencies>
 			</plugin>
 		</plugins>
 		<pluginManagement>
@@ -146,6 +168,5 @@
 			</plugins>
 		</pluginManagement>
 	</build>
-
 
 </project>
