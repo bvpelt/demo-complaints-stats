@@ -17,6 +17,12 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<spring-boot.version>1.5.1.RELEASE</spring-boot.version>
+		<docker-maven.version>0.4.13</docker-maven.version>
+		<docker.image.prefix>dockerpinguin</docker.image.prefix>
+		<docker.repository>docker.io</docker.repository>
+		<!-- Set docker.skip to true to disable Docker.
+             Useful to build apps on systems where Docker is not installed. -->
+		<docker.skip>false</docker.skip>
 	</properties>
 
 	<parent>
@@ -62,6 +68,83 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>com.spotify</groupId>
+					<artifactId>docker-maven-plugin</artifactId>
+					<version>${docker-maven.version}</version>
+					<configuration>
+						<imageName>${docker.image.prefix}/${project.artifactId}</imageName>
+						<baseImage>java:openjdk-8-jdk-alpine</baseImage>
+						<entryPoint>["java","-Djava.security.egd=file:/dev/./urandom","-jar","/${project.build.finalName}.jar"]</entryPoint>
+						<serverId>docker-hub</serverId>
+						<skipDockerBuild>${docker.skip}</skipDockerBuild>
+						<!--
+                        <dockerDirectory>${project.basedir}/docker</dockerDirectory>
+                        -->
+						<resources>
+							<!-- copy the service's jar file from target into the root directory of the image -->
+							<resource>
+								<targetPath>/</targetPath>
+								<directory>${project.build.directory}</directory>
+								<include>${project.build.finalName}.jar</include>
+							</resource>
+							<!-- Copy contents of project's docker directory, if it exists.
+                                 Used to pull in docker build specific application.properties settings
+                            <resource>
+                                <targetPath>/</targetPath>
+                                <directory>${project.basedir}/docker</directory>
+                                <include>*</include>
+                            </resource>
+                            -->
+						</resources>
+						<exposes>
+							<expose>8080</expose>
+						</exposes>
+						<!-- optionally overwrite tags every time image is built with docker:build -->
+						<forceTags>true</forceTags>
+						<imageTags>
+							<imageTag>${project.version}</imageTag>
+							<imageTag>latest</imageTag>
+						</imageTags>
+					</configuration>
+					<executions>
+						<execution>
+							<id>build-image</id>
+							<phase>package</phase>
+							<goals>
+								<goal>build</goal>
+							</goals>
+						</execution>
+						<execution>
+							<id>tag-image-version</id>
+							<phase>deploy</phase>
+							<goals>
+								<goal>tag</goal>
+							</goals>
+							<configuration>
+								<image>${docker.image.prefix}/${project.artifactId}</image>
+								<newName>${docker.repository}/${docker.image.prefix}/${project.artifactId}:${project.version}</newName>
+								<pushImage>true</pushImage>
+							</configuration>
+						</execution>
+						<execution>
+							<id>tag-image-latest</id>
+							<phase>deploy</phase>
+							<goals>
+								<goal>tag</goal>
+							</goals>
+							<configuration>
+								<image>${docker.image.prefix}/${project.artifactId}</image>
+								<newName>${docker.repository}/${docker.image.prefix}/${project.artifactId}:latest</newName>
+								<pushImage>true</pushImage>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
 
 
