@@ -1,6 +1,4 @@
-package com.example;
-
-import java.io.Serializable;
+package nl.bsoft.events;
 
 /**
  * Created by bvpelt on 1/28/17.
